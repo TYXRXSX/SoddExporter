@@ -45,7 +45,7 @@ public class FileUploadService {
         );
 
         String authHeader = authProperty.getAuthToken();
-        String result = soddApiClient.uploadFile(essenceId, multipartFile);
+        String result = soddApiClient.uploadFile(essenceId, multipartFile, authHeader);
         if (result.contains("-")) {
             FilesDAO filesDAO = filesRepo.findByFilePath(absolutePath);
             filesDAO.setIsExported(true);
@@ -74,7 +74,7 @@ public class FileUploadService {
 
     @PostConstruct
     public void exportAll(){
-        filesRepo.findAll().forEach(x->{
+        filesRepo.findAll().stream().filter(x->{return !x.getIsExported();}).forEach(x->{
            String essenceId = this.searchEssenceByFundAndCase(x.getFundNumber(),x.getInventoryNumber()).toString();
             try {
                 this.uploadFromPathAndEssenceId(essenceId,x.getFilePath());
