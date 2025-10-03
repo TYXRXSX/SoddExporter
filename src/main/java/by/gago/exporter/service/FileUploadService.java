@@ -60,12 +60,13 @@ public class FileUploadService {
                 .fundCode(fundCode)
                 .inventoryCode(caseCode)
                 .archiveCodes(Arrays.asList("42"))
+                .pageSize(20)
                 .build();
         PageResponseDto pageResponseDto = soddApiClient.searchEssence(searchRequestDto);
 
         return pageResponseDto.getContent()
                 .stream()
-                .filter(x -> x.getLevel().contains("описи"))
+                .filter(x -> x.getLevel().contains("Опись"))
                 .findFirst()
                 .get()
                 .getEssenceId();

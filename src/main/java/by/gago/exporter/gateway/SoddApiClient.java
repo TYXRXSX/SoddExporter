@@ -12,7 +12,8 @@ public interface SoddApiClient {
 
     @PostMapping(value = "/api/v1/search/digital_object/inventory/{id}/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     String uploadFile(@PathVariable("id") String id,
-                      @RequestPart("file") MultipartFile file);
+                      @RequestPart("file") MultipartFile file,
+                      @RequestHeader("Authorization") String authHeader);
 
     @PostMapping(value = "/api/v1/search", consumes = "application/json", produces = "application/json")
     PageResponseDto searchEssence(
