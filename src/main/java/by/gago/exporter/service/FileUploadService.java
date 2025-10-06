@@ -6,12 +6,15 @@ import by.gago.exporter.entity.FilesDAO;
 import by.gago.exporter.property.AuthProperty;
 import by.gago.exporter.repository.FilesRepo;
 import jakarta.annotation.PostConstruct;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import by.gago.exporter.gateway.SoddApiClient;
 import lombok.RequiredArgsConstructor;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -26,6 +29,7 @@ public class FileUploadService {
     private final AuthProperty authProperty;
     private final SoddApiClient soddApiClient;
     private final FilesRepo filesRepo;
+    private final FileParserService fileParserService;
 
     private boolean uploadFromPathAndEssenceId(String essenceId, String absolutePath) throws IOException {
         Path path = Path.of(absolutePath);
@@ -55,7 +59,6 @@ public class FileUploadService {
     }
 
     private UUID searchEssenceByFundAndCase(String fundCode, String caseCode) {
-        String authHeader = authProperty.getAuthToken();
         SearchRequestDto searchRequestDto = SearchRequestDto.builder()
                 .fundCode(fundCode)
                 .inventoryCode(caseCode)
@@ -72,14 +75,22 @@ public class FileUploadService {
                 .getEssenceId();
     }
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void exportAll(){
+
+
+        fileParserService.findFiles();
+        final long MAX_SIZE = 100L * 1024L * 1024L;
+
         filesRepo.findAll().stream().filter(x->{return !x.getIsExported();}).forEach(x->{
-           String essenceId = this.searchEssenceByFundAndCase(x.getFundNumber(),x.getInventoryNumber()).toString();
+            System.out.println("exporting Fund: "+x.getFundNumber()+" "+" Case: "+ x.getInventoryNumber());
             try {
-                this.uploadFromPathAndEssenceId(essenceId,x.getFilePath());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                if(Files.size(Path.of(x.getFilePath())) < MAX_SIZE) {
+                    String essenceId = this.searchEssenceByFundAndCase(x.getFundNumber(), x.getInventoryNumber()).toString();
+                    this.uploadFromPathAndEssenceId(essenceId, x.getFilePath());
+                }
+            } catch (Exception e) {
+                System.out.println(e);
             }
         });
     }

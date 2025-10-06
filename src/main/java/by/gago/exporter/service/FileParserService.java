@@ -17,6 +17,7 @@ public class FileParserService {
 
     public Map<String, List<String>> findFiles() {
         File directory = new File("\\\\srv-hyper\\БД Электронная архивная опись");
+        System.out.println("export started");
         Map<String, List<String>> folderContents = new HashMap<>();
 
         if (directory.exists() && directory.isDirectory()) {
@@ -31,6 +32,8 @@ public class FileParserService {
         } else {
             throw new IllegalArgumentException("Invalid directory path");
         }
+        System.out.println("export ended");
+
         return folderContents;
     }
 
@@ -48,14 +51,17 @@ public class FileParserService {
                         String caseNumber = parts[3].replaceAll("[^0-9]", ""); // Номер дела
                         String fileName = file.getAbsolutePath();
                         String formattedOutput = String.format("%s (%s, %s)", fileName, fundNumber, caseNumber);
-                        System.out.println(formattedOutput);
 
-                        filesRepo.save(FilesDAO.builder()
-                                .filePath(fileName)
-                                .fundNumber(fundNumber)
-                                .inventoryNumber(caseNumber)
-                                .isExported(false)
-                                .build());
+                        try {
+                            System.out.println(formattedOutput);
+                            filesRepo.save(FilesDAO.builder()
+                                    .filePath(fileName)
+                                    .fundNumber(fundNumber)
+                                    .inventoryNumber(caseNumber)
+                                    .isExported(false)
+                                    .build());
+                        } catch (Exception e) {
+                        }
                         folderContents.computeIfAbsent(folder.getName(), k -> new ArrayList<>()).add(formattedOutput);
                     }
                 }
