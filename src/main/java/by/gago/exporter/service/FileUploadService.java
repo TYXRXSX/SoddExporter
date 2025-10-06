@@ -88,6 +88,8 @@ public class FileUploadService {
                 if(Files.size(Path.of(x.getFilePath())) < MAX_SIZE) {
                     String essenceId = this.searchEssenceByFundAndCase(x.getFundNumber(), x.getInventoryNumber()).toString();
                     this.uploadFromPathAndEssenceId(essenceId, x.getFilePath());
+                } else {
+                    System.out.println("file is larger than 100mb");
                 }
             } catch (Exception e) {
                 System.out.println(e);
