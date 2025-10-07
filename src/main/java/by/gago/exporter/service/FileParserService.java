@@ -4,6 +4,7 @@ import by.gago.exporter.entity.FilesDAO;
 import by.gago.exporter.repository.FilesRepo;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -11,13 +12,14 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileParserService {
 
     private final FilesRepo filesRepo;
 
     public Map<String, List<String>> findFiles() {
         File directory = new File("\\\\srv-hyper\\БД Электронная архивная опись");
-        System.out.println("export started");
+        log.info("export started");
         Map<String, List<String>> folderContents = new HashMap<>();
 
         if (directory.exists() && directory.isDirectory()) {
@@ -30,9 +32,9 @@ public class FileParserService {
                 }
             }
         } else {
-            throw new IllegalArgumentException("Invalid directory path");
+            log.error("Invalid directory path");
         }
-        System.out.println("export ended");
+        log.info("export ended");
 
         return folderContents;
     }
@@ -53,7 +55,7 @@ public class FileParserService {
                         String formattedOutput = String.format("%s (%s, %s)", fileName, fundNumber, caseNumber);
 
                         try {
-                            System.out.println(formattedOutput);
+                            log.info(formattedOutput);
                             filesRepo.save(FilesDAO.builder()
                                     .filePath(fileName)
                                     .fundNumber(fundNumber)
@@ -61,6 +63,7 @@ public class FileParserService {
                                     .isExported(false)
                                     .build());
                         } catch (Exception e) {
+                            log.error(e.getMessage());
                         }
                         folderContents.computeIfAbsent(folder.getName(), k -> new ArrayList<>()).add(formattedOutput);
                     }

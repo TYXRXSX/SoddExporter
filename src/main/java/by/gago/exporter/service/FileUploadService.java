@@ -6,6 +6,7 @@ import by.gago.exporter.entity.FilesDAO;
 import by.gago.exporter.property.AuthProperty;
 import by.gago.exporter.repository.FilesRepo;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.mock.web.MockMultipartFile;
@@ -24,8 +25,10 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileUploadService {
 
+    private final long MAX_SIZE = 100L * 1024L * 1024L;
     private final AuthProperty authProperty;
     private final SoddApiClient soddApiClient;
     private final FilesRepo filesRepo;
@@ -78,21 +81,19 @@ public class FileUploadService {
     @EventListener(ApplicationReadyEvent.class)
     public void exportAll(){
 
-
         fileParserService.findFiles();
-        final long MAX_SIZE = 100L * 1024L * 1024L;
 
         filesRepo.findAll().stream().filter(x->{return !x.getIsExported();}).forEach(x->{
-            System.out.println("exporting Fund: "+x.getFundNumber()+" "+" Case: "+ x.getInventoryNumber());
+            log.info("exporting Fund: "+x.getFundNumber()+" "+" Case: "+ x.getInventoryNumber());
             try {
                 if(Files.size(Path.of(x.getFilePath())) < MAX_SIZE) {
                     String essenceId = this.searchEssenceByFundAndCase(x.getFundNumber(), x.getInventoryNumber()).toString();
                     this.uploadFromPathAndEssenceId(essenceId, x.getFilePath());
                 } else {
-                    System.out.println("file is larger than 100mb");
+                    log.error("file is larger than 100mb");
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                log.error(e.getMessage());
             }
         });
     }
