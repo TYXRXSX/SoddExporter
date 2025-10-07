@@ -75,7 +75,7 @@ public class FileUploadService {
                 .getEssenceId();
     }
 
-    @EventListener(ApplicationReadyEvent.class)
+//    @EventListener(ApplicationReadyEvent.class)
     public void exportAll(){
 
 

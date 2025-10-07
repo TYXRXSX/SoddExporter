@@ -1,0 +1,22 @@
+body {
+    display: flex;
+    min-height: 100vh;
+}
+.sidebar {
+    width: 250px; /* Ширина боковой панели */
+    height: 100vh; /* Полная высота */
+    background-color: #343a40; /* Цвет фона */
+    position: fixed; /* Фиксированное положение */
+    padding-top: 20px; /* Отступ сверху */
+}
+.sidebar .nav-link {
+    color: white;
+}
+.sidebar .nav-link:hover {
+    background-color: #495057; /* Цвет фона при наведении */
+}
+.content {
+    margin-left: 250px; /* Отступ для контента */
+    padding: 20px; /* Отступ вокруг контента */
+    min-width: 70vw;
+}
