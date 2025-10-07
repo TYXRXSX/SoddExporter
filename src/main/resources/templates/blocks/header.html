@@ -1,0 +1,31 @@
+<aside class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" th:fragment="sidebar"
+       xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+    <link rel="stylesheet" href="/css/components/sidebar.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css" rel="stylesheet"/>
+    <ul class="nav nav-pills flex-column mb-auto" sec:authorize="isAuthenticated()">
+        <li class="nav-item">
+            <a href="/" class="nav-link text-white">
+                <span class="bi bi-file-earmark-text me-2"></span> Список файлов
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/export/logs" class="nav-link text-white">
+                <span class="bi bi-menu-button-wide me-2"></span> Отчеты об экспорте
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/stats" class="nav-link text-white">
+                <span class="bi bi-tools me-2"></span> Статистика
+            </a>
+        </li>
+    </ul>
+    <hr>
+<!--    <div class="d-flex align-items-center text-white text-decoration-none" sec:authorize="isAuthenticated()">-->
+<!--        <img th:src="@{'https://cdn.discordapp.com/avatars/'+ ${#authentication.getPrincipal().getAttribute('id')} +'/'+${#authentication.getPrincipal().getAttribute('avatar')}+'.png'}"-->
+<!--             alt="User Avatar" class="rounded-circle me-2" width="32" height="32"/>-->
+<!--        <strong th:text="${#authentication.getPrincipal().getAttribute('username')}">User Name</strong>-->
+<!--    </div>-->
+</aside>
