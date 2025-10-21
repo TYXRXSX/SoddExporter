@@ -70,6 +70,7 @@ public class FileUploadService {
         return pageResponseDto.getContent()
                 .stream()
                 .filter(x -> x.getLevel().contains("Опись"))
+                .filter(x-> !x.isHasDigitalObjects())
                 .findFirst()
                 .get()
                 .getEssenceId();
